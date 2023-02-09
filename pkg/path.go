@@ -19,7 +19,7 @@ func pathDeserialiseCode(g *generation) (string, error) {
 		return "", nil
 	}
 	g.newImport(iport{alias: "chi", path: "github.com/go-chi/chi/v5"})
-	c := mapping(f, func(f field) string { return pathExtractCode(s, f) })
+	c := mapping(f, func(f field) string { return pathExtractCode(g, f) })
 	return strings.Join(c, "\n"), nil
 }
 
@@ -31,7 +31,7 @@ func pathTaggedFields(s sourceStruct) []field {
 }
 
 // pathExtractCode generates code to extract the path parameter associated with f
-func pathExtractCode(s sourceStruct, f field) string {
+func pathExtractCode(g *generation, f field) string {
 	t := filter(f.tags, func(t tag) bool { return t.key == "path" })
 	if len(t) != 1 {
 		log.Panicf("Could not find unique path tag in %#v", f)
@@ -40,13 +40,33 @@ func pathExtractCode(s sourceStruct, f field) string {
 		pathExtractTemplate,
 		t[0].values[0],
 		t[0].values[0],
-		f.name,
-		t[0].values[0],
+		convertCode(g, f, t[0]),
 	)
+}
+
+// convertCode generates the code to convert the path parameter to the correct type
+func convertCode(g *generation, f field, t tag) string {
+	switch f.typ {
+	case "string":
+		return fmt.Sprintf("	d.%s = %s", f.name, t.values[0])
+	case "int":
+		g.newImport(iport{path: "strconv"})
+		return fmt.Sprintf(convertTemplate,
+			t.values[0], "Int", t.values[0], f.name, "int(", t.values[0], ")")
+	}
+	log.Panicf("Cannot convert type '%s'", f.typ)
+	return ""
 }
 
 // pathExtractTemplate is the template code for extracting a path parameter
 const pathExtractTemplate = `
 	%s := chi.URLParam(r, "%s")
-	d.%s = %s
+%s
 `
+
+// convertTemplate is the template code for converting path parameters to numeric types
+const convertTemplate = `	%sConvert, err := strconv.Parse%s(%s, 10, 64)
+	if err != nil {
+		return d, err
+	}
+	d.%s = %s%sConvert%s`

@@ -101,6 +101,11 @@ func convertCode(g *generation, f field, t tag) string {
 		g.newImport(iport{path: "strconv"})
 		return fmt.Sprintf(convertFloatTemplate,
 			t.values[0], "Float", t.values[0], 32, f.name, "float32(", t.values[0], ")")
+
+	case "bool":
+		g.newImport(iport{path: "strconv"})
+		return fmt.Sprintf(convertBoolTemplate,
+			t.values[0], t.values[0], f.name, t.values[0])
 	}
 	log.Panicf("Cannot convert type '%s'", f.typ)
 	return ""
@@ -125,3 +130,10 @@ const convertFloatTemplate = `	%sConvert, err := strconv.Parse%s(%s, %d)
 		return d, err
 	}
 	d.%s = %s%sConvert%s`
+
+// convertBoolTemplate is the template code for converting path parameters to float numeric types
+const convertBoolTemplate = `	%sConvert, err := strconv.ParseBool(%s)
+	if err != nil {
+		return d, err
+	}
+	d.%s = %sConvert`

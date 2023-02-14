@@ -1,18 +1,11 @@
 package redeco
 
 import (
-	"fmt"
 	"testing"
 )
 
 func TestStringPathParameterExtractionWithoutConversionWhenStructHasPathTags(t *testing.T) {
-	g := NewFromString(fmt.Sprintf(`
-	package foo
-
-	type A struct {
-		A string %spath:"a"%s
-	}
-	`, "`", "`"))
+	g := NewFromString(pathTestSource("A", "A", "string", "a"))
 	s, err := g.Generate(options{handler: "bar", target: "A"})
 	if err != nil {
 		t.Errorf("Generation failed with %s", err)

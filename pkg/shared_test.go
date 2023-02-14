@@ -2,6 +2,7 @@ package redeco
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 )
 
@@ -37,4 +38,15 @@ func mustMarshal(i interface{}) string {
 		panic(err)
 	}
 	return string(b)
+}
+
+// pathTestSource generates the source code for path parameter test
+func pathTestSource(name string, field string, typ string, param string) string {
+	return fmt.Sprintf(`
+	package foo
+
+	type %s struct {
+		%s %s %spath:"%s"%s
+	}
+	`, name, field, typ, "`", param, "`")
 }

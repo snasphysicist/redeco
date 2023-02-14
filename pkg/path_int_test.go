@@ -1,18 +1,11 @@
 package redeco
 
 import (
-	"fmt"
 	"testing"
 )
 
 func TestPathParameterExtractionWithConversionWhenIntFieldHasPathTags(t *testing.T) {
-	g := NewFromString(fmt.Sprintf(`
-	package foo
-
-	type A struct {
-		A int %spath:"a"%s
-	}
-	`, "`", "`"))
+	g := NewFromString(pathTestSource("A", "A", "int", "a"))
 	s, err := g.Generate(options{handler: "bar", target: "A"})
 	if err != nil {
 		t.Errorf("Generation failed with %s", err)
@@ -41,13 +34,7 @@ func barDecoder(r *http.Request) (A, error) {
 }
 
 func TestPathParameterExtractionWithConversionWhenInt32FieldHasPathTags(t *testing.T) {
-	g := NewFromString(fmt.Sprintf(`
-	package foo
-
-	type B struct {
-        C int32 %spath:"e"%s
-	}
-	`, "`", "`"))
+	g := NewFromString(pathTestSource("B", "C", "int32", "e"))
 	s, err := g.Generate(options{handler: "bar", target: "B"})
 	if err != nil {
 		t.Errorf("Generation failed with %s", err)
@@ -76,13 +63,7 @@ func barDecoder(r *http.Request) (B, error) {
 }
 
 func TestPathParameterExtractionWithConversionWhenInt64FieldHasPathTags(t *testing.T) {
-	g := NewFromString(fmt.Sprintf(`
-	package foo
-
-	type F struct {
-        g int64 %spath:"h"%s
-	}
-	`, "`", "`"))
+	g := NewFromString(pathTestSource("F", "g", "int64", "h"))
 	s, err := g.Generate(options{handler: "bar", target: "F"})
 	if err != nil {
 		t.Errorf("Generation failed with %s", err)
@@ -111,13 +92,7 @@ func barDecoder(r *http.Request) (F, error) {
 }
 
 func TestPathParameterExtractionWithConversionWhenInt16FieldHasPathTags(t *testing.T) {
-	g := NewFromString(fmt.Sprintf(`
-	package foo
-
-	type I struct {
-        K int16 %spath:"lama"%s
-	}
-	`, "`", "`"))
+	g := NewFromString(pathTestSource("I", "K", "int16", "lama"))
 	s, err := g.Generate(options{handler: "bar", target: "I"})
 	if err != nil {
 		t.Errorf("Generation failed with %s", err)
@@ -146,13 +121,7 @@ func barDecoder(r *http.Request) (I, error) {
 }
 
 func TestPathParameterExtractionWithConversionWhenInt8FieldHasPathTags(t *testing.T) {
-	g := NewFromString(fmt.Sprintf(`
-	package foo
-
-	type your struct {
-        exhaust int8 %spath:"style"%s
-	}
-	`, "`", "`"))
+	g := NewFromString(pathTestSource("your", "exhaust", "int8", "style"))
 	s, err := g.Generate(options{handler: "bar", target: "your"})
 	if err != nil {
 		t.Errorf("Generation failed with %s", err)

@@ -59,3 +59,32 @@ func MoreDecoder(r *http.Request) (heart, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestPathParameterExtractionWithConversionWhenUint32FieldHasPathTags(t *testing.T) {
+	g := NewFromString(pathTestSource("Light", "fat", "uint32", "winter"))
+	s, err := g.Generate(options{handler: "blade", target: "Light"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import chi "github.com/go-chi/chi/v5"
+import "net/http"
+import "strconv"
+
+func bladeDecoder(r *http.Request) (Light, error) {
+	var d Light
+	var err error
+
+	winter := chi.URLParam(r, "winter")
+	winterConvert, err := strconv.ParseUint(winter, 10, 32)
+	if err != nil {
+		return d, err
+	}
+	d.fat = uint32(winterConvert)
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

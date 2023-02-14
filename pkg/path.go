@@ -69,6 +69,10 @@ func convertCode(g *generation, f field, t tag) string {
 		g.newImport(iport{path: "strconv"})
 		return fmt.Sprintf(convertTemplate,
 			t.values[0], "Int", t.values[0], 8, f.name, "int8(", t.values[0], ")")
+	case "uint":
+		g.newImport(iport{path: "strconv"})
+		return fmt.Sprintf(convertTemplate,
+			t.values[0], "Uint", t.values[0], 64, f.name, "uint(", t.values[0], ")")
 	}
 	log.Panicf("Cannot convert type '%s'", f.typ)
 	return ""

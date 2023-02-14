@@ -117,3 +117,32 @@ func hatDecoder(r *http.Request) (stupid, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestPathParameterExtractionWithConversionWhenUint8FieldHasPathTags(t *testing.T) {
+	g := NewFromString(pathTestSource("autumn", "cool", "uint8", "Torch"))
+	s, err := g.Generate(options{handler: "move", target: "autumn"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import chi "github.com/go-chi/chi/v5"
+import "net/http"
+import "strconv"
+
+func moveDecoder(r *http.Request) (autumn, error) {
+	var d autumn
+	var err error
+
+	Torch := chi.URLParam(r, "Torch")
+	TorchConvert, err := strconv.ParseUint(Torch, 10, 8)
+	if err != nil {
+		return d, err
+	}
+	d.cool = uint8(TorchConvert)
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

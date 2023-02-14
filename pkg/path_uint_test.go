@@ -88,3 +88,32 @@ func bladeDecoder(r *http.Request) (Light, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestPathParameterExtractionWithConversionWhenUint16FieldHasPathTags(t *testing.T) {
+	g := NewFromString(pathTestSource("stupid", "Were", "uint16", "super"))
+	s, err := g.Generate(options{handler: "hat", target: "stupid"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import chi "github.com/go-chi/chi/v5"
+import "net/http"
+import "strconv"
+
+func hatDecoder(r *http.Request) (stupid, error) {
+	var d stupid
+	var err error
+
+	super := chi.URLParam(r, "super")
+	superConvert, err := strconv.ParseUint(super, 10, 16)
+	if err != nil {
+		return d, err
+	}
+	d.Were = uint16(superConvert)
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

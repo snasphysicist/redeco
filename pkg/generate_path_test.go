@@ -104,3 +104,38 @@ func barDecoder(r *http.Request) (B, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestPathParameterExtractionWithConversionWhenInt64FieldHasPathTags(t *testing.T) {
+	g := NewFromString(fmt.Sprintf(`
+	package foo
+
+	type F struct {
+        g int64 %spath:"h"%s
+	}
+	`, "`", "`"))
+	s, err := g.Generate(options{handler: "bar", target: "F"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import chi "github.com/go-chi/chi/v5"
+import "net/http"
+import "strconv"
+
+func barDecoder(r *http.Request) (F, error) {
+	var d F
+	var err error
+
+	h := chi.URLParam(r, "h")
+	hConvert, err := strconv.ParseInt(h, 10, 64)
+	if err != nil {
+		return d, err
+	}
+	d.g = int64(hConvert)
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

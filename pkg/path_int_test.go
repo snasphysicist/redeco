@@ -63,7 +63,7 @@ func barDecoder(r *http.Request) (B, error) {
 	var err error
 
 	e := chi.URLParam(r, "e")
-	eConvert, err := strconv.ParseInt(e, 10, 64)
+	eConvert, err := strconv.ParseInt(e, 10, 32)
 	if err != nil {
 		return d, err
 	}
@@ -133,7 +133,7 @@ func barDecoder(r *http.Request) (I, error) {
 	var err error
 
 	lama := chi.URLParam(r, "lama")
-	lamaConvert, err := strconv.ParseInt(lama, 10, 64)
+	lamaConvert, err := strconv.ParseInt(lama, 10, 16)
 	if err != nil {
 		return d, err
 	}
@@ -168,7 +168,7 @@ func barDecoder(r *http.Request) (your, error) {
 	var err error
 
 	style := chi.URLParam(r, "style")
-	styleConvert, err := strconv.ParseInt(style, 10, 64)
+	styleConvert, err := strconv.ParseInt(style, 10, 8)
 	if err != nil {
 		return d, err
 	}

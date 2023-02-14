@@ -52,23 +52,23 @@ func convertCode(g *generation, f field, t tag) string {
 	case "int":
 		g.newImport(iport{path: "strconv"})
 		return fmt.Sprintf(convertTemplate,
-			t.values[0], "Int", t.values[0], f.name, "int(", t.values[0], ")")
+			t.values[0], "Int", t.values[0], 64, f.name, "int(", t.values[0], ")")
 	case "int32":
 		g.newImport(iport{path: "strconv"})
 		return fmt.Sprintf(convertTemplate,
-			t.values[0], "Int", t.values[0], f.name, "int32(", t.values[0], ")")
+			t.values[0], "Int", t.values[0], 32, f.name, "int32(", t.values[0], ")")
 	case "int64":
 		g.newImport(iport{path: "strconv"})
 		return fmt.Sprintf(convertTemplate,
-			t.values[0], "Int", t.values[0], f.name, "int64(", t.values[0], ")")
+			t.values[0], "Int", t.values[0], 64, f.name, "int64(", t.values[0], ")")
 	case "int16":
 		g.newImport(iport{path: "strconv"})
 		return fmt.Sprintf(convertTemplate,
-			t.values[0], "Int", t.values[0], f.name, "int16(", t.values[0], ")")
+			t.values[0], "Int", t.values[0], 16, f.name, "int16(", t.values[0], ")")
 	case "int8":
 		g.newImport(iport{path: "strconv"})
 		return fmt.Sprintf(convertTemplate,
-			t.values[0], "Int", t.values[0], f.name, "int8(", t.values[0], ")")
+			t.values[0], "Int", t.values[0], 8, f.name, "int8(", t.values[0], ")")
 	}
 	log.Panicf("Cannot convert type '%s'", f.typ)
 	return ""
@@ -81,7 +81,7 @@ const pathExtractTemplate = `
 `
 
 // convertTemplate is the template code for converting path parameters to numeric types
-const convertTemplate = `	%sConvert, err := strconv.Parse%s(%s, 10, 64)
+const convertTemplate = `	%sConvert, err := strconv.Parse%s(%s, 10, %d)
 	if err != nil {
 		return d, err
 	}

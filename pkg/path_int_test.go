@@ -109,3 +109,38 @@ func barDecoder(r *http.Request) (F, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestPathParameterExtractionWithConversionWhenInt16FieldHasPathTags(t *testing.T) {
+	g := NewFromString(fmt.Sprintf(`
+	package foo
+
+	type I struct {
+        K int16 %spath:"lama"%s
+	}
+	`, "`", "`"))
+	s, err := g.Generate(options{handler: "bar", target: "I"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import chi "github.com/go-chi/chi/v5"
+import "net/http"
+import "strconv"
+
+func barDecoder(r *http.Request) (I, error) {
+	var d I
+	var err error
+
+	lama := chi.URLParam(r, "lama")
+	lamaConvert, err := strconv.ParseInt(lama, 10, 64)
+	if err != nil {
+		return d, err
+	}
+	d.K = int16(lamaConvert)
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

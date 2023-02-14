@@ -59,3 +59,32 @@ func upsetDecoder(r *http.Request) (alive, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestPathParameterExtractionWithConversionWhenFloat32FieldHasPathTags(t *testing.T) {
+	g := NewFromString(pathTestSource("begin", "hands", "float32", "way"))
+	s, err := g.Generate(options{handler: "french", target: "begin"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import chi "github.com/go-chi/chi/v5"
+import "net/http"
+import "strconv"
+
+func frenchDecoder(r *http.Request) (begin, error) {
+	var d begin
+	var err error
+
+	way := chi.URLParam(r, "way")
+	wayConvert, err := strconv.ParseFloat(way, 32)
+	if err != nil {
+		return d, err
+	}
+	d.hands = float32(wayConvert)
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

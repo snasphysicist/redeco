@@ -97,6 +97,10 @@ func convertCode(g *generation, f field, t tag) string {
 		g.newImport(iport{path: "strconv"})
 		return fmt.Sprintf(convertFloatTemplate,
 			t.values[0], "Float", t.values[0], 64, f.name, "float64(", t.values[0], ")")
+	case "float32":
+		g.newImport(iport{path: "strconv"})
+		return fmt.Sprintf(convertFloatTemplate,
+			t.values[0], "Float", t.values[0], 32, f.name, "float32(", t.values[0], ")")
 	}
 	log.Panicf("Cannot convert type '%s'", f.typ)
 	return ""

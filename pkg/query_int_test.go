@@ -127,3 +127,34 @@ func linkDecoder(r *http.Request) (gloom, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenInt8FieldHasQueryTag(t *testing.T) {
+	g := NewFromString(queryTestSource("build", "screw", "int8", "Proof"))
+	s, err := g.Generate(options{handler: "loan", target: "build"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func loanDecoder(r *http.Request) (build, error) {
+	var d build
+	var err error
+
+	Proof := r.URL.Query()["Proof"]
+	if len(Proof) != 1 {
+		return d, fmt.Errorf("for query parameter 'Proof' expected 1 value, got '%v'", Proof)
+	}
+	ProofConvert, err := strconv.ParseInt(Proof[0], 10, 8)
+	if err != nil {
+		return d, err
+	}
+	d.screw = int8(ProofConvert)
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

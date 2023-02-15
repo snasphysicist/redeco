@@ -65,3 +65,34 @@ func DreamDecoder(r *http.Request) (club, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenInt32FieldHasQueryTag(t *testing.T) {
+	g := NewFromString(queryTestSource("Soar", "sow", "int32", "wing"))
+	s, err := g.Generate(options{handler: "bank", target: "Soar"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func bankDecoder(r *http.Request) (Soar, error) {
+	var d Soar
+	var err error
+
+	wing := r.URL.Query()["wing"]
+	if len(wing) != 1 {
+		return d, fmt.Errorf("for query parameter 'wing' expected 1 value, got '%v'", wing)
+	}
+	wingConvert, err := strconv.ParseInt(wing[0], 10, 32)
+	if err != nil {
+		return d, err
+	}
+	d.sow = int32(wingConvert)
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

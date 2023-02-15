@@ -50,21 +50,7 @@ func queryExtractCode(g *generation, f field) string {
 		)
 	case "int":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(
-			queryIntExtractTemplate,
-			t[0].values[0],
-			t[0].values[0],
-			t[0].values[0],
-			t[0].values[0],
-			"%v",
-			t[0].values[0],
-			t[0].values[0],
-			t[0].values[0],
-			64,
-			f.name,
-			"int",
-			t[0].values[0],
-		)
+		return queryIntExtractTemplate(t[0].values[0], f.name, 64, "int")
 	}
 	log.Panicf("Don't know how to convert type '%s'", f.typ)
 	return ""
@@ -79,8 +65,8 @@ const queryExtractTemplate = `
 	d.%s = %s[0]
 `
 
-// queryIntExtractTemplate is the template code for extracting a path parameter
-const queryIntExtractTemplate = `
+func queryIntExtractTemplate(param string, field string, bits uint8, typ string) string {
+	return fmt.Sprintf(`
 	%s := r.URL.Query()["%s"]
 	if len(%s) != 1 {
 		return d, fmt.Errorf("for query parameter '%s' expected 1 value, got '%s'", %s)
@@ -90,4 +76,5 @@ const queryIntExtractTemplate = `
 		return d, err
 	}
 	d.%s = %s(%sConvert)
-`
+`, param, param, param, param, "%v", param, param, param, bits, field, typ, param)
+}

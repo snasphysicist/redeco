@@ -35,17 +35,39 @@ func queryExtractCode(g *generation, f field) string {
 	if len(t) != 1 {
 		log.Panicf("Could not find unique path tag in %#v", f)
 	}
-	return fmt.Sprintf(
-		queryExtractTemplate,
-		t[0].values[0],
-		t[0].values[0],
-		t[0].values[0],
-		t[0].values[0],
-		"%v",
-		t[0].values[0],
-		f.name,
-		t[0].values[0],
-	)
+	switch f.typ {
+	case "string":
+		return fmt.Sprintf(
+			queryExtractTemplate,
+			t[0].values[0],
+			t[0].values[0],
+			t[0].values[0],
+			t[0].values[0],
+			"%v",
+			t[0].values[0],
+			f.name,
+			t[0].values[0],
+		)
+	case "int":
+		g.newImport(iport{path: "strconv"})
+		return fmt.Sprintf(
+			queryIntExtractTemplate,
+			t[0].values[0],
+			t[0].values[0],
+			t[0].values[0],
+			t[0].values[0],
+			"%v",
+			t[0].values[0],
+			t[0].values[0],
+			t[0].values[0],
+			64,
+			f.name,
+			"int",
+			t[0].values[0],
+		)
+	}
+	log.Panicf("Don't know how to convert type '%s'", f.typ)
+	return ""
 }
 
 // queryExtractTemplate is the template code for extracting a path parameter
@@ -55,4 +77,17 @@ const queryExtractTemplate = `
 		return d, fmt.Errorf("for query parameter '%s' expected 1 value, got '%s'", %s)
 	}
 	d.%s = %s[0]
+`
+
+// queryIntExtractTemplate is the template code for extracting a path parameter
+const queryIntExtractTemplate = `
+	%s := r.URL.Query()["%s"]
+	if len(%s) != 1 {
+		return d, fmt.Errorf("for query parameter '%s' expected 1 value, got '%s'", %s)
+	}
+	%sConvert, err := strconv.ParseInt(%s[0], 10, %d)
+	if err != nil {
+		return d, err
+	}
+	d.%s = %s(%sConvert)
 `

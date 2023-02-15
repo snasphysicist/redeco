@@ -96,3 +96,34 @@ func bankDecoder(r *http.Request) (Soar, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenInt16FieldHasQueryTag(t *testing.T) {
+	g := NewFromString(queryTestSource("gloom", "Cart", "int16", "growth"))
+	s, err := g.Generate(options{handler: "link", target: "gloom"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func linkDecoder(r *http.Request) (gloom, error) {
+	var d gloom
+	var err error
+
+	growth := r.URL.Query()["growth"]
+	if len(growth) != 1 {
+		return d, fmt.Errorf("for query parameter 'growth' expected 1 value, got '%v'", growth)
+	}
+	growthConvert, err := strconv.ParseInt(growth[0], 10, 16)
+	if err != nil {
+		return d, err
+	}
+	d.Cart = int16(growthConvert)
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

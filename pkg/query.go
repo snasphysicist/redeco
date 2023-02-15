@@ -57,6 +57,9 @@ func queryExtractCode(g *generation, f field) string {
 	case "int32":
 		g.newImport(iport{path: "strconv"})
 		return queryIntExtractTemplate(t[0].values[0], f.name, 32, "int32")
+	case "int16":
+		g.newImport(iport{path: "strconv"})
+		return queryIntExtractTemplate(t[0].values[0], f.name, 16, "int16")
 	}
 	log.Panicf("Don't know how to convert type '%s'", f.typ)
 	return ""

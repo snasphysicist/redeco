@@ -12,6 +12,10 @@ func generateFunction(g *generation) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	q, err := queryDeserialiseCode(g)
+	if err != nil {
+		return "", err
+	}
 	g.newImport(iport{path: "net/http"})
 	return fmt.Sprintf(
 		functionTemplate,
@@ -20,6 +24,7 @@ func generateFunction(g *generation) (string, error) {
 		g.o.target,
 		b,
 		p,
+		q,
 	), nil
 }
 
@@ -28,7 +33,7 @@ const functionTemplate = `
 func %sDecoder(r *http.Request) (%s, error) {
 	var d %s
 	var err error
-%s%s
+%s%s%s
 	return d, err
 }
 `

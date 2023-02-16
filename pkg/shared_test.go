@@ -50,3 +50,14 @@ func pathTestSource(name string, field string, typ string, param string) string 
 	}
 	`, name, field, typ, "`", param, "`")
 }
+
+// queryTestSource generates the source code for query parameter tests
+func queryTestSource(name string, field string, typ string, param string) string {
+	return fmt.Sprintf(`
+	package foo
+
+	type %s struct {
+		%s %s %squery:"%s"%s
+	}
+	`, name, field, typ, "`", param, "`")
+}

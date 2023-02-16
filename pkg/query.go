@@ -78,6 +78,9 @@ func queryExtractCode(g *generation, f field) string {
 	case "uint8":
 		g.newImport(iport{path: "strconv"})
 		return queryIntExtractTemplate(t[0].values[0], f.name, "Uint", 8, "uint8")
+	case "bool":
+		g.newImport(iport{path: "strconv"})
+		return queryBoolExtractTemplate(t[0].values[0], f.name)
 	}
 	log.Panicf("Don't know how to convert type '%s'", f.typ)
 	return ""
@@ -106,4 +109,20 @@ func queryIntExtractTemplate(param string, field string, parse string, bits uint
 	}
 	d.%s = %s(%sConvert)
 `, param, param, param, param, "%v", param, param, parse, param, bits, field, typ, param)
+}
+
+// queryBoolExtractTemplate generates code extracting & converting
+// a query parameter with a bool type
+func queryBoolExtractTemplate(param string, field string) string {
+	return fmt.Sprintf(`
+	%s := r.URL.Query()["%s"]
+	if len(%s) != 1 {
+		return d, fmt.Errorf("for query parameter '%s' expected 1 value, got '%s'", %s)
+	}
+	%sConvert, err := strconv.ParseBool(%s[0])
+	if err != nil {
+		return d, err
+	}
+	d.%s = %sConvert
+`, param, param, param, param, "%v", param, param, param, field, param)
 }

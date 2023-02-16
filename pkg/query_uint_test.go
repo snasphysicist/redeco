@@ -65,3 +65,34 @@ func HookDecoder(r *http.Request) (stir, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenUint32FieldHasQueryTag(t *testing.T) {
+	g := NewFromString(queryTestSource("Seize", "cross", "uint32", "raise"))
+	s, err := g.Generate(options{handler: "show", target: "Seize"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func showDecoder(r *http.Request) (Seize, error) {
+	var d Seize
+	var err error
+
+	raise := r.URL.Query()["raise"]
+	if len(raise) != 1 {
+		return d, fmt.Errorf("for query parameter 'raise' expected 1 value, got '%v'", raise)
+	}
+	raiseConvert, err := strconv.ParseUint(raise[0], 10, 32)
+	if err != nil {
+		return d, err
+	}
+	d.cross = uint32(raiseConvert)
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

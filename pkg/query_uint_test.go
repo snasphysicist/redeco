@@ -127,3 +127,34 @@ func carveDecoder(r *http.Request) (cage, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenUint8FieldHasQueryTag(t *testing.T) {
+	g := NewFromString(queryTestSource("snail", "salt", "uint8", "Hut"))
+	s, err := g.Generate(options{handler: "fork", target: "snail"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func forkDecoder(r *http.Request) (snail, error) {
+	var d snail
+	var err error
+
+	Hut := r.URL.Query()["Hut"]
+	if len(Hut) != 1 {
+		return d, fmt.Errorf("for query parameter 'Hut' expected 1 value, got '%v'", Hut)
+	}
+	HutConvert, err := strconv.ParseUint(Hut[0], 10, 8)
+	if err != nil {
+		return d, err
+	}
+	d.salt = uint8(HutConvert)
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

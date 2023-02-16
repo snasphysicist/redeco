@@ -50,19 +50,22 @@ func queryExtractCode(g *generation, f field) string {
 		)
 	case "int":
 		g.newImport(iport{path: "strconv"})
-		return queryIntExtractTemplate(t[0].values[0], f.name, 64, "int")
+		return queryIntExtractTemplate(t[0].values[0], f.name, "Int", 64, "int")
 	case "int64":
 		g.newImport(iport{path: "strconv"})
-		return queryIntExtractTemplate(t[0].values[0], f.name, 64, "int64")
+		return queryIntExtractTemplate(t[0].values[0], f.name, "Int", 64, "int64")
 	case "int32":
 		g.newImport(iport{path: "strconv"})
-		return queryIntExtractTemplate(t[0].values[0], f.name, 32, "int32")
+		return queryIntExtractTemplate(t[0].values[0], f.name, "Int", 32, "int32")
 	case "int16":
 		g.newImport(iport{path: "strconv"})
-		return queryIntExtractTemplate(t[0].values[0], f.name, 16, "int16")
+		return queryIntExtractTemplate(t[0].values[0], f.name, "Int", 16, "int16")
 	case "int8":
 		g.newImport(iport{path: "strconv"})
-		return queryIntExtractTemplate(t[0].values[0], f.name, 8, "int8")
+		return queryIntExtractTemplate(t[0].values[0], f.name, "Int", 8, "int8")
+	case "uint":
+		g.newImport(iport{path: "strconv"})
+		return queryIntExtractTemplate(t[0].values[0], f.name, "Uint", 64, "uint")
 	}
 	log.Panicf("Don't know how to convert type '%s'", f.typ)
 	return ""
@@ -77,16 +80,18 @@ const queryExtractTemplate = `
 	d.%s = %s[0]
 `
 
-func queryIntExtractTemplate(param string, field string, bits uint8, typ string) string {
+// queryUintExtractTemplate generates code extracting & converting
+// a query parameter with a (u)int* type
+func queryIntExtractTemplate(param string, field string, parse string, bits uint8, typ string) string {
 	return fmt.Sprintf(`
 	%s := r.URL.Query()["%s"]
 	if len(%s) != 1 {
 		return d, fmt.Errorf("for query parameter '%s' expected 1 value, got '%s'", %s)
 	}
-	%sConvert, err := strconv.ParseInt(%s[0], 10, %d)
+	%sConvert, err := strconv.Parse%s(%s[0], 10, %d)
 	if err != nil {
 		return d, err
 	}
 	d.%s = %s(%sConvert)
-`, param, param, param, param, "%v", param, param, param, bits, field, typ, param)
+`, param, param, param, param, "%v", param, param, parse, param, bits, field, typ, param)
 }

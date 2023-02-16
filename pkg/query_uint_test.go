@@ -96,3 +96,34 @@ func showDecoder(r *http.Request) (Seize, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenUint16FieldHasQueryTag(t *testing.T) {
+	g := NewFromString(queryTestSource("cage", "Bench", "uint16", "truth"))
+	s, err := g.Generate(options{handler: "carve", target: "cage"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func carveDecoder(r *http.Request) (cage, error) {
+	var d cage
+	var err error
+
+	truth := r.URL.Query()["truth"]
+	if len(truth) != 1 {
+		return d, fmt.Errorf("for query parameter 'truth' expected 1 value, got '%v'", truth)
+	}
+	truthConvert, err := strconv.ParseUint(truth[0], 10, 16)
+	if err != nil {
+		return d, err
+	}
+	d.Bench = uint16(truthConvert)
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

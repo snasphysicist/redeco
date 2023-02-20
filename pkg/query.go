@@ -34,5 +34,14 @@ func queryExtractCode(g *generation, f field) string {
 	if len(t) != 1 {
 		log.Panicf("Could not find unique query tag in %#v", f)
 	}
+	if parameterIsOptional(t[0]) {
+		return optionalQueryExtractCode(g, f, t[0])
+	}
 	return requiredQueryExtractCode(g, f, t[0])
+}
+
+// parameterIsOptional returns true iff the tag values
+// indicate that the query parameter may be omitted
+func parameterIsOptional(t tag) bool {
+	return anyMatch(t.values, func(s string) bool { return s == "optional" })
 }

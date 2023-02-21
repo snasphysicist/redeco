@@ -34,3 +34,36 @@ func crimeDecoder(r *http.Request) (hobby, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenInt64FieldHasOptionalQueryTag(t *testing.T) {
+	g := NewFromString(optionalQueryTestSource("Aware", "spend", "int64", "world"))
+	s, err := g.Generate(options{handler: "stage", target: "Aware"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func stageDecoder(r *http.Request) (Aware, error) {
+	var d Aware
+	var err error
+
+	world := r.URL.Query()["world"]
+	if len(world) > 1 {
+		return d, fmt.Errorf("for query parameter 'world' expected 0 or 1 value, got '%v'", world)
+	}
+	if len(world) == 1 {
+		worldConvert, err := strconv.ParseInt(world[0], 10, 64)
+		if err != nil {
+			return d, err
+		}
+		d.spend = int64(worldConvert)
+	}
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

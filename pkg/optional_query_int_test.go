@@ -67,3 +67,36 @@ func stageDecoder(r *http.Request) (Aware, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenInt32FieldHasOptionalQueryTag(t *testing.T) {
+	g := NewFromString(optionalQueryTestSource("pause", "Budge", "int32", "think"))
+	s, err := g.Generate(options{handler: "hover", target: "pause"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func hoverDecoder(r *http.Request) (pause, error) {
+	var d pause
+	var err error
+
+	think := r.URL.Query()["think"]
+	if len(think) > 1 {
+		return d, fmt.Errorf("for query parameter 'think' expected 0 or 1 value, got '%v'", think)
+	}
+	if len(think) == 1 {
+		thinkConvert, err := strconv.ParseInt(think[0], 10, 32)
+		if err != nil {
+			return d, err
+		}
+		d.Budge = int32(thinkConvert)
+	}
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

@@ -100,3 +100,36 @@ func throwDecoder(r *http.Request) (blind, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenUint16FieldHasOptionalQueryTag(t *testing.T) {
+	g := NewFromString(optionalQueryTestSource("aloof", "touch", "uint16", "Laser"))
+	s, err := g.Generate(options{handler: "thumb", target: "aloof"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func thumbDecoder(r *http.Request) (aloof, error) {
+	var d aloof
+	var err error
+
+	Laser := r.URL.Query()["Laser"]
+	if len(Laser) > 1 {
+		return d, fmt.Errorf("for query parameter 'Laser' expected 0 or 1 value, got '%v'", Laser)
+	}
+	if len(Laser) == 1 {
+		LaserConvert, err := strconv.ParseUint(Laser[0], 10, 16)
+		if err != nil {
+			return d, err
+		}
+		d.touch = uint16(LaserConvert)
+	}
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

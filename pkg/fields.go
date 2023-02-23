@@ -57,7 +57,7 @@ func tagsAttachedTo(f *ast.Field) []tag {
 		if r.err != nil {
 			panic(r.err)
 		}
-		parsed = append(parsed, tag{key: r.key, values: []string{r.value}})
+		parsed = append(parsed, tag{key: r.key, values: strings.Split(r.value, ",")})
 		remaining = r.remaining
 	}
 	return parsed

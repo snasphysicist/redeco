@@ -61,3 +61,14 @@ func queryTestSource(name string, field string, typ string, param string) string
 	}
 	`, name, field, typ, "`", param, "`")
 }
+
+// optionalQueryTestSource generates the source code for query parameter tests
+func optionalQueryTestSource(name string, field string, typ string, param string) string {
+	return fmt.Sprintf(`
+	package foo
+
+	type %s struct {
+		%s %s %squery:"%s,optional"%s
+	}
+	`, name, field, typ, "`", param, "`")
+}

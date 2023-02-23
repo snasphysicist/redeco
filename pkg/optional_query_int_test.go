@@ -100,3 +100,36 @@ func hoverDecoder(r *http.Request) (pause, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenInt16FieldHasOptionalQueryTag(t *testing.T) {
+	g := NewFromString(optionalQueryTestSource("charm", "river", "int16", "Doubt"))
+	s, err := g.Generate(options{handler: "smash", target: "charm"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func smashDecoder(r *http.Request) (charm, error) {
+	var d charm
+	var err error
+
+	Doubt := r.URL.Query()["Doubt"]
+	if len(Doubt) > 1 {
+		return d, fmt.Errorf("for query parameter 'Doubt' expected 0 or 1 value, got '%v'", Doubt)
+	}
+	if len(Doubt) == 1 {
+		DoubtConvert, err := strconv.ParseInt(Doubt[0], 10, 16)
+		if err != nil {
+			return d, err
+		}
+		d.river = int16(DoubtConvert)
+	}
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

@@ -5,12 +5,26 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"strings"
 )
 
 // Generate is the main command called when used as a CLI tool
 func Generate() {
-	g := NewFromString("")
+	p, err := fileWithNameAndPackage(os.Getenv("GOFILE"), os.Getenv("GOPACKAGE"))
+	if err != nil {
+		log.Fatalf("Failed to find file with name %s in package %s",
+			os.Getenv("GOFILE"), os.Getenv("GOPACKAGE"))
+	}
+	f, err := os.Open(p)
+	if err != nil {
+		log.Fatalf("Failed to open file '%s': %s", p, err)
+	}
+	b, err := io.ReadAll(f)
+	if err != nil {
+		log.Fatalf("Failed to read file '%s': %s", p, err)
+	}
+	g := NewFromString(string(b))
 	o, err := parseArguments()
 	if err != nil {
 		log.Fatalf("Input arguments incorrect: %s", err)

@@ -133,3 +133,36 @@ func smashDecoder(r *http.Request) (charm, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenInt8FieldHasOptionalQueryTag(t *testing.T) {
+	g := NewFromString(optionalQueryTestSource("amuse", "choke", "int8", "smoke"))
+	s, err := g.Generate(options{handler: "Medal", target: "amuse"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func MedalDecoder(r *http.Request) (amuse, error) {
+	var d amuse
+	var err error
+
+	smoke := r.URL.Query()["smoke"]
+	if len(smoke) > 1 {
+		return d, fmt.Errorf("for query parameter 'smoke' expected 0 or 1 value, got '%v'", smoke)
+	}
+	if len(smoke) == 1 {
+		smokeConvert, err := strconv.ParseInt(smoke[0], 10, 8)
+		if err != nil {
+			return d, err
+		}
+		d.choke = int8(smokeConvert)
+	}
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

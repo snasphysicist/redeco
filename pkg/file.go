@@ -49,7 +49,8 @@ type pathCollector struct {
 }
 
 // gather implements os.WalkFunc for pathCollector
-func (p pathCollector) gather(path string, _ os.FileInfo, _ error) error {
+func (p *pathCollector) gather(path string, _ os.FileInfo, _ error) error {
+	p.paths = append(p.paths, path)
 	return nil
 }
 

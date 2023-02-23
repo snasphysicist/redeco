@@ -27,6 +27,9 @@ func optionalQueryExtractCode(g *generation, f field, t tag) string {
 	case "int8":
 		g.newImport(iport{path: "strconv"})
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Int", 8, "int8")
+	case "uint":
+		g.newImport(iport{path: "strconv"})
+		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint")
 	}
 	log.Panicf("Don't know how to generate code for type: %s", f.typ)
 	return ""

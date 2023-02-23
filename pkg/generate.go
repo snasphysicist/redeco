@@ -10,7 +10,7 @@ import (
 
 // Generate is the main command called when used as a CLI tool
 func Generate() {
-	g := NewFromString(src())
+	g := NewFromString("")
 	o, err := parseArguments()
 	if err != nil {
 		log.Fatalf("Input arguments incorrect: %s", err)
@@ -84,16 +84,4 @@ func (g generator) Generate(o options) (string, error) {
 	log.Printf("Generated decoding function: %s", f)
 	i := importsCode(&gtn)
 	return fmt.Sprintf("%s\n%s\n%s", p, i, f), nil
-}
-
-// src returns some example source code for testing
-// TODO: remove and move to tests
-func src() string {
-	return fmt.Sprintf(`
-package foo
-
-type Example struct {
-	A int %sjson:"a"%s
-}
-    `, "`", "`")
 }

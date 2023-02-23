@@ -67,3 +67,36 @@ func bladeDecoder(r *http.Request) (Grass, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenUint32FieldHasOptionalQueryTag(t *testing.T) {
+	g := NewFromString(optionalQueryTestSource("blind", "Exile", "uint32", "night"))
+	s, err := g.Generate(options{handler: "throw", target: "blind"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func throwDecoder(r *http.Request) (blind, error) {
+	var d blind
+	var err error
+
+	night := r.URL.Query()["night"]
+	if len(night) > 1 {
+		return d, fmt.Errorf("for query parameter 'night' expected 0 or 1 value, got '%v'", night)
+	}
+	if len(night) == 1 {
+		nightConvert, err := strconv.ParseUint(night[0], 10, 32)
+		if err != nil {
+			return d, err
+		}
+		d.Exile = uint32(nightConvert)
+	}
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

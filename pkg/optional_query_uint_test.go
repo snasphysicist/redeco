@@ -133,3 +133,36 @@ func thumbDecoder(r *http.Request) (aloof, error) {
 `
 	expectString(t, expect, s)
 }
+
+func TestQueryParameterExtractionWithConversionWhenUint8FieldHasOptionalQueryTag(t *testing.T) {
+	g := NewFromString(optionalQueryTestSource("tower", "swarm", "uint8", "enemy"))
+	s, err := g.Generate(options{handler: "Quote", target: "tower"})
+	if err != nil {
+		t.Errorf("Generation failed with %s", err)
+	}
+	expect := `package foo
+
+import "net/http"
+import "strconv"
+
+func QuoteDecoder(r *http.Request) (tower, error) {
+	var d tower
+	var err error
+
+	enemy := r.URL.Query()["enemy"]
+	if len(enemy) > 1 {
+		return d, fmt.Errorf("for query parameter 'enemy' expected 0 or 1 value, got '%v'", enemy)
+	}
+	if len(enemy) == 1 {
+		enemyConvert, err := strconv.ParseUint(enemy[0], 10, 8)
+		if err != nil {
+			return d, err
+		}
+		d.swarm = uint8(enemyConvert)
+	}
+
+	return d, err
+}
+`
+	expectString(t, expect, s)
+}

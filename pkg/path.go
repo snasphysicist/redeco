@@ -36,9 +36,10 @@ func pathExtractCode(g *generation, f field) string {
 	if len(t) != 1 {
 		log.Panicf("Could not find unique path tag in %#v", f)
 	}
+	v := safeVariableName(t[0].values[0])
 	return fmt.Sprintf(
 		pathExtractTemplate,
-		t[0].values[0],
+		v,
 		t[0].values[0],
 		convertCode(g, f, t[0]),
 	)
@@ -48,64 +49,49 @@ func pathExtractCode(g *generation, f field) string {
 func convertCode(g *generation, f field, t tag) string {
 	switch f.typ {
 	case "string":
-		return fmt.Sprintf("	d.%s = %s", f.name, t.values[0])
+		return fmt.Sprintf("	d.%s = %s", f.name, safeVariableName(t.values[0]))
 	case "int":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertIntTemplate,
-			t.values[0], "Int", t.values[0], 64, f.name, "int(", t.values[0], ")")
+		return convertIntTemplate(t.values[0], "Int", 64, f.name, "int")
 	case "int32":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertIntTemplate,
-			t.values[0], "Int", t.values[0], 32, f.name, "int32(", t.values[0], ")")
+		return convertIntTemplate(t.values[0], "Int", 32, f.name, "int32")
 	case "int64":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertIntTemplate,
-			t.values[0], "Int", t.values[0], 64, f.name, "int64(", t.values[0], ")")
+		return convertIntTemplate(t.values[0], "Int", 64, f.name, "int64")
 	case "int16":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertIntTemplate,
-			t.values[0], "Int", t.values[0], 16, f.name, "int16(", t.values[0], ")")
+		return convertIntTemplate(t.values[0], "Int", 16, f.name, "int16")
 	case "int8":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertIntTemplate,
-			t.values[0], "Int", t.values[0], 8, f.name, "int8(", t.values[0], ")")
+		return convertIntTemplate(t.values[0], "Int", 8, f.name, "int8")
 	case "uint":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertIntTemplate,
-			t.values[0], "Uint", t.values[0], 64, f.name, "uint(", t.values[0], ")")
+		return convertIntTemplate(t.values[0], "Uint", 64, f.name, "uint")
 	case "uint64":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertIntTemplate,
-			t.values[0], "Uint", t.values[0], 64, f.name, "uint64(", t.values[0], ")")
+		return convertIntTemplate(t.values[0], "Uint", 64, f.name, "uint64")
 	case "uint32":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertIntTemplate,
-			t.values[0], "Uint", t.values[0], 32, f.name, "uint32(", t.values[0], ")")
+		return convertIntTemplate(t.values[0], "Uint", 32, f.name, "uint32")
 	case "uint16":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertIntTemplate,
-			t.values[0], "Uint", t.values[0], 16, f.name, "uint16(", t.values[0], ")")
+		return convertIntTemplate(t.values[0], "Uint", 16, f.name, "uint16")
 	case "uint8":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertIntTemplate,
-			t.values[0], "Uint", t.values[0], 8, f.name, "uint8(", t.values[0], ")")
+		return convertIntTemplate(t.values[0], "Uint", 8, f.name, "uint8")
 	case "float":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertFloatTemplate,
-			t.values[0], "Float", t.values[0], 64, f.name, "float(", t.values[0], ")")
+		return convertFloatTemplate(t.values[0], 64, f.name, "float")
 	case "float64":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertFloatTemplate,
-			t.values[0], "Float", t.values[0], 64, f.name, "float64(", t.values[0], ")")
+		return convertFloatTemplate(t.values[0], 64, f.name, "float64")
 	case "float32":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertFloatTemplate,
-			t.values[0], "Float", t.values[0], 32, f.name, "float32(", t.values[0], ")")
-
+		return convertFloatTemplate(t.values[0], 32, f.name, "float32")
 	case "bool":
 		g.newImport(iport{path: "strconv"})
-		return fmt.Sprintf(convertBoolTemplate,
-			t.values[0], t.values[0], f.name, t.values[0])
+		return convertBoolTemplate(t.values[0], f.name)
 	}
 	log.Panicf("Cannot convert type '%s'", f.typ)
 	return ""
@@ -118,22 +104,34 @@ const pathExtractTemplate = `
 `
 
 // convertIntTemplate is the template code for converting path parameters to (u)int numeric types
-const convertIntTemplate = `	%sConvert, err := strconv.Parse%s(%s, 10, %d)
+func convertIntTemplate(param string, parse string, bits uint8, field string, cast string) string {
+	v := safeVariableName(param)
+	return fmt.Sprintf(`	%sConvert, err := strconv.Parse%s(%s, 10, %d)
 	if err != nil {
 		return d, err
 	}
-	d.%s = %s%sConvert%s`
+	d.%s = %s(%sConvert)`,
+		v, parse, v, bits, field, cast, v)
+}
 
 // convertFloatTemplate is the template code for converting path parameters to float numeric types
-const convertFloatTemplate = `	%sConvert, err := strconv.Parse%s(%s, %d)
+func convertFloatTemplate(param string, bits uint8, field string, cast string) string {
+	v := safeVariableName(param)
+	return fmt.Sprintf(`	%sConvert, err := strconv.ParseFloat(%s, %d)
 	if err != nil {
 		return d, err
 	}
-	d.%s = %s%sConvert%s`
+	d.%s = %s(%sConvert)`,
+		v, v, bits, field, cast, v)
+}
 
 // convertBoolTemplate is the template code for converting path parameters to float numeric types
-const convertBoolTemplate = `	%sConvert, err := strconv.ParseBool(%s)
+func convertBoolTemplate(param string, field string) string {
+	v := safeVariableName(param)
+	return fmt.Sprintf(`	%sConvert, err := strconv.ParseBool(%s)
 	if err != nil {
 		return d, err
 	}
-	d.%s = %sConvert`
+	d.%s = %sConvert`,
+		v, v, field, v)
+}

@@ -10,16 +10,17 @@ import (
 func requiredQueryExtractCode(g *generation, f field, t tag) string {
 	switch f.typ {
 	case "string":
+		v := safeVariableName(t.values[0])
 		return fmt.Sprintf(
 			requiredQueryStringExtractTemplate,
+			v,
 			t.values[0],
-			t.values[0],
-			t.values[0],
+			v,
 			t.values[0],
 			"%v",
-			t.values[0],
+			v,
 			f.name,
-			t.values[0],
+			v,
 		)
 	case "int":
 		g.newImport(iport{path: "strconv"})
@@ -71,6 +72,7 @@ const requiredQueryStringExtractTemplate = `
 // requiredQueryIntExtractTemplate generates code extracting & converting
 // a query parameter with a (u)int* type
 func requiredQueryIntExtractTemplate(param string, field string, parse string, bits uint8, typ string) string {
+	v := safeVariableName(param)
 	return fmt.Sprintf(`
 	%s := r.URL.Query()["%s"]
 	if len(%s) != 1 {
@@ -81,12 +83,13 @@ func requiredQueryIntExtractTemplate(param string, field string, parse string, b
 		return d, err
 	}
 	d.%s = %s(%sConvert)
-`, param, param, param, param, "%v", param, param, parse, param, bits, field, typ, param)
+`, v, param, v, param, "%v", v, v, parse, v, bits, field, typ, v)
 }
 
 // requiredQueryBoolExtractTemplate generates code extracting & converting
 // a query parameter with a bool type
 func requiredQueryBoolExtractTemplate(param string, field string) string {
+	v := safeVariableName(param)
 	return fmt.Sprintf(`
 	%s := r.URL.Query()["%s"]
 	if len(%s) != 1 {
@@ -97,5 +100,5 @@ func requiredQueryBoolExtractTemplate(param string, field string) string {
 		return d, err
 	}
 	d.%s = %sConvert
-`, param, param, param, param, "%v", param, param, param, field, param)
+`, v, param, v, param, "%v", v, v, v, field, v)
 }

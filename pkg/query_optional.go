@@ -51,6 +51,7 @@ func optionalQueryExtractCode(g *generation, f field, t tag) string {
 
 // optionalQueryStringExtractTemplate generates code extracting an optional string type query parameter
 func optionalQueryStringExtractTemplate(param string, field string) string {
+	v := safeVariableName(param)
 	return fmt.Sprintf(`
 	%s := r.URL.Query()["%s"]
 	if len(%s) > 1 {
@@ -59,12 +60,13 @@ func optionalQueryStringExtractTemplate(param string, field string) string {
 	if len(%s) == 1 {
 		d.%s = %s[0]
 	}
-`, param, param, param, param, "%v", param, param, field, param)
+`, v, param, v, param, "%v", v, v, field, v)
 }
 
 // optionalQueryBoolExtractTemplate generates code extracting & converting
 // a query parameter with a bool type
 func optionalQueryBoolExtractTemplate(param string, field string) string {
+	v := safeVariableName(param)
 	return fmt.Sprintf(`
 	%s := r.URL.Query()["%s"]
 	if len(%s) > 1 {
@@ -77,12 +79,13 @@ func optionalQueryBoolExtractTemplate(param string, field string) string {
 		}
 		d.%s = %sConvert
 	}
-`, param, param, param, param, "%v", param, param, param, param, field, param)
+`, v, param, v, param, "%v", v, v, v, v, field, v)
 }
 
 // optionalQueryIntExtractTemplate generates code extracting & converting
 // a query parameter with a (u)int type
 func optionalQueryIntExtractTemplate(param string, field string, fn string, bits uint8, cast string) string {
+	v := safeVariableName(param)
 	return fmt.Sprintf(`
 	%s := r.URL.Query()["%s"]
 	if len(%s) > 1 {
@@ -95,5 +98,5 @@ func optionalQueryIntExtractTemplate(param string, field string, fn string, bits
 		}
 		d.%s = %s(%sConvert)
 	}
-`, param, param, param, param, "%v", param, param, param, fn, param, bits, field, cast, param)
+`, v, param, v, param, "%v", v, v, v, fn, v, bits, field, cast, v)
 }

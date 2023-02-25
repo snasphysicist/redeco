@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -70,4 +71,14 @@ func inPackage(path string, targetPkg string) (bool, error) {
 		return false, err
 	}
 	return pkg == targetPkg, nil
+}
+
+// generatedFilePath is the path to the file where the generated code will be stored
+func generatedFilePath(handler string, name string, pkg string) (string, error) {
+	in, err := fileWithNameAndPackage(name, pkg)
+	if err != nil {
+		return "", err
+	}
+	d := path.Dir(in)
+	return path.Join(d, fmt.Sprintf("%s_decoder.go", handler)), nil
 }

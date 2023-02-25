@@ -30,8 +30,19 @@ func Generate() {
 		log.Fatalf("Input arguments incorrect: %s", err)
 	}
 	c, err := g.Generate(o)
-	log.Printf("Output: %s", c)
-	log.Printf("Error: %s", err)
+	if err != nil {
+		log.Fatalf("Failed to generate decoding code: %s", err)
+	}
+	log.Printf("Generated decoding code for %s", o.handler)
+	op, err := generatedFilePath(o.handler, os.Getenv("GOFILE"), os.Getenv("GOPACKAGE"))
+	if err != nil {
+		log.Fatalf("Failed to determine generated file path: %s", err)
+	}
+	err = os.WriteFile(op, []byte(c), 0644)
+	if err != nil {
+		log.Fatalf("Failed to write generated code to '%s': %s", op, err)
+	}
+	log.Printf("Wrote code for %s's decoder out to %s", o.handler, op)
 }
 
 // generator is responsible for generating the new source code

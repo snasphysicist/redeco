@@ -10,6 +10,7 @@ func TestQueryParameterExtractionWithConversionWhenIntFieldHasOptionalQueryTag(t
 	}
 	expect := `package foo
 
+import "fmt"
 import "net/http"
 import "strconv"
 
@@ -43,6 +44,7 @@ func TestQueryParameterExtractionWithConversionWhenInt64FieldHasOptionalQueryTag
 	}
 	expect := `package foo
 
+import "fmt"
 import "net/http"
 import "strconv"
 
@@ -76,6 +78,7 @@ func TestQueryParameterExtractionWithConversionWhenInt32FieldHasOptionalQueryTag
 	}
 	expect := `package foo
 
+import "fmt"
 import "net/http"
 import "strconv"
 
@@ -109,6 +112,7 @@ func TestQueryParameterExtractionWithConversionWhenInt16FieldHasOptionalQueryTag
 	}
 	expect := `package foo
 
+import "fmt"
 import "net/http"
 import "strconv"
 
@@ -142,6 +146,7 @@ func TestQueryParameterExtractionWithConversionWhenInt8FieldHasOptionalQueryTag(
 	}
 	expect := `package foo
 
+import "fmt"
 import "net/http"
 import "strconv"
 

@@ -12,37 +12,37 @@ func optionalQueryExtractCode(g *generation, f field, t tag) string {
 	case "string":
 		return optionalQueryStringExtractTemplate(t.values[0], f.name)
 	case "bool":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryBoolExtractTemplate(t.values[0], f.name)
 	case "int":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Int", 64, "int")
 	case "int64":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Int", 64, "int64")
 	case "int32":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Int", 32, "int32")
 	case "int16":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Int", 16, "int16")
 	case "int8":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Int", 8, "int8")
 	case "uint":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint")
 	case "uint64":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint64")
 	case "uint32":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 32, "uint32")
 	case "uint16":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 16, "uint16")
 	case "uint8":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 8, "uint8")
 	}
 	log.Panicf("Don't know how to generate code for type: %s", f.typ)

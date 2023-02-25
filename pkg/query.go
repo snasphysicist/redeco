@@ -45,3 +45,9 @@ func queryExtractCode(g *generation, f field) string {
 func parameterIsOptional(t tag) bool {
 	return anyMatch(t.values, func(s string) bool { return s == "optional" })
 }
+
+// attachConversionImports attaches to the generation
+func attachConversionImports(g *generation) {
+	g.newImport(iport{path: "fmt"})
+	g.newImport(iport{path: "strconv"})
+}

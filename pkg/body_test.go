@@ -43,8 +43,8 @@ func TestBodyDeserialisationWhenStructHasJSONTags(t *testing.T) {
 	}
 	expect := `package foo
 
+import "encoding/json"
 import "io"
-import "json"
 import "net/http"
 
 func barDecoder(r *http.Request) (A, error) {

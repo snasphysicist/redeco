@@ -10,6 +10,7 @@ func TestQueryParameterExtractionWithConversionWhenBoolFieldHasQueryTag(t *testi
 	}
 	expect := `package foo
 
+import "fmt"
 import "net/http"
 import "strconv"
 

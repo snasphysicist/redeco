@@ -12,37 +12,37 @@ func optionalQueryExtractCode(g *generation, f field, t tag) string {
 	case "string":
 		return optionalQueryStringExtractTemplate(t.values[0], f.name)
 	case "bool":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryBoolExtractTemplate(t.values[0], f.name)
 	case "int":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Int", 64, "int")
 	case "int64":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Int", 64, "int64")
 	case "int32":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Int", 32, "int32")
 	case "int16":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Int", 16, "int16")
 	case "int8":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Int", 8, "int8")
 	case "uint":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint")
 	case "uint64":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint64")
 	case "uint32":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 32, "uint32")
 	case "uint16":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 16, "uint16")
 	case "uint8":
-		g.newImport(iport{path: "strconv"})
+		attachConversionImports(g)
 		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 8, "uint8")
 	}
 	log.Panicf("Don't know how to generate code for type: %s", f.typ)
@@ -51,6 +51,7 @@ func optionalQueryExtractCode(g *generation, f field, t tag) string {
 
 // optionalQueryStringExtractTemplate generates code extracting an optional string type query parameter
 func optionalQueryStringExtractTemplate(param string, field string) string {
+	v := safeVariableName(param)
 	return fmt.Sprintf(`
 	%s := r.URL.Query()["%s"]
 	if len(%s) > 1 {
@@ -59,12 +60,13 @@ func optionalQueryStringExtractTemplate(param string, field string) string {
 	if len(%s) == 1 {
 		d.%s = %s[0]
 	}
-`, param, param, param, param, "%v", param, param, field, param)
+`, v, param, v, param, "%v", v, v, field, v)
 }
 
 // optionalQueryBoolExtractTemplate generates code extracting & converting
 // a query parameter with a bool type
 func optionalQueryBoolExtractTemplate(param string, field string) string {
+	v := safeVariableName(param)
 	return fmt.Sprintf(`
 	%s := r.URL.Query()["%s"]
 	if len(%s) > 1 {
@@ -77,12 +79,13 @@ func optionalQueryBoolExtractTemplate(param string, field string) string {
 		}
 		d.%s = %sConvert
 	}
-`, param, param, param, param, "%v", param, param, param, param, field, param)
+`, v, param, v, param, "%v", v, v, v, v, field, v)
 }
 
 // optionalQueryIntExtractTemplate generates code extracting & converting
 // a query parameter with a (u)int type
 func optionalQueryIntExtractTemplate(param string, field string, fn string, bits uint8, cast string) string {
+	v := safeVariableName(param)
 	return fmt.Sprintf(`
 	%s := r.URL.Query()["%s"]
 	if len(%s) > 1 {
@@ -95,5 +98,5 @@ func optionalQueryIntExtractTemplate(param string, field string, fn string, bits
 		}
 		d.%s = %s(%sConvert)
 	}
-`, param, param, param, param, "%v", param, param, param, fn, param, bits, field, cast, param)
+`, v, param, v, param, "%v", v, v, v, fn, v, bits, field, cast, v)
 }

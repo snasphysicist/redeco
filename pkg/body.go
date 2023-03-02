@@ -16,7 +16,7 @@ func bodyDeserialiseCode(g *generation) (string, error) {
 		return "", nil
 	}
 	g.newImport(iport{path: "io"})
-	g.newImport(iport{path: "json"})
+	g.newImport(iport{path: "encoding/json"})
 	return bodyDeserialiseTemplate, nil
 }
 

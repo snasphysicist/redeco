@@ -5,19 +5,44 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"strings"
 )
 
 // Generate is the main command called when used as a CLI tool
 func Generate() {
-	g := NewFromString(src())
+	p, err := fileWithNameAndPackage(os.Getenv("GOFILE"), os.Getenv("GOPACKAGE"))
+	if err != nil {
+		log.Fatalf("Failed to find file with name %s in package %s",
+			os.Getenv("GOFILE"), os.Getenv("GOPACKAGE"))
+	}
+	f, err := os.Open(p)
+	if err != nil {
+		log.Fatalf("Failed to open file '%s': %s", p, err)
+	}
+	b, err := io.ReadAll(f)
+	if err != nil {
+		log.Fatalf("Failed to read file '%s': %s", p, err)
+	}
+	g := NewFromString(string(b))
 	o, err := parseArguments()
 	if err != nil {
 		log.Fatalf("Input arguments incorrect: %s", err)
 	}
 	c, err := g.Generate(o)
-	log.Printf("Output: %s", c)
-	log.Printf("Error: %s", err)
+	if err != nil {
+		log.Fatalf("Failed to generate decoding code: %s", err)
+	}
+	log.Printf("Generated decoding code for %s", o.handler)
+	op, err := generatedFilePath(o.handler, os.Getenv("GOFILE"), os.Getenv("GOPACKAGE"))
+	if err != nil {
+		log.Fatalf("Failed to determine generated file path: %s", err)
+	}
+	err = os.WriteFile(op, []byte(c), 0644)
+	if err != nil {
+		log.Fatalf("Failed to write generated code to '%s': %s", op, err)
+	}
+	log.Printf("Wrote code for %s's decoder out to %s", o.handler, op)
 }
 
 // generator is responsible for generating the new source code
@@ -84,16 +109,4 @@ func (g generator) Generate(o options) (string, error) {
 	log.Printf("Generated decoding function: %s", f)
 	i := importsCode(&gtn)
 	return fmt.Sprintf("%s\n%s\n%s", p, i, f), nil
-}
-
-// src returns some example source code for testing
-// TODO: remove and move to tests
-func src() string {
-	return fmt.Sprintf(`
-package foo
-
-type Example struct {
-	A int %sjson:"a"%s
-}
-    `, "`", "`")
 }

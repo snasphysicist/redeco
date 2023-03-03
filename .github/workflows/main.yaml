@@ -31,6 +31,10 @@ jobs:
         env:
           WITH_V: true
           DRY_RUN: true
+      - name: Print Changelog
+        env:
+          CHANGELOG: ${{ steps.tag_version.outputs.changelog }}
+        run: echo $CHANGELOG
   release:
     runs-on: ubuntu-latest
     needs: test

@@ -33,7 +33,7 @@ jobs:
           DRY_RUN: true
       - name: Changelog
         id: changelog
-        uses: mikepenz/release-changelog-builder-action@3.7.0
+        uses: mikepenz/release-changelog-builder-action@latest
       - name: Print Changelog
         env:
           CHANGELOG: ${{ steps.changelog.outputs.changelog }}

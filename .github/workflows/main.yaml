@@ -39,6 +39,7 @@ jobs:
           skip-commit: true
           output-file: false
           skip-tag: true
+          release-count: 1
       - name: Print Changelog
         env:
           CHANGELOG: ${{ steps.changelog.outputs.clean_changelog }}

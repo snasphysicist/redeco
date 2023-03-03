@@ -41,7 +41,7 @@ jobs:
           skip-tag: true
       - name: Print Changelog
         env:
-          CHANGELOG: ${{ steps.changelog.outputs.changelog }}
+          CHANGELOG: ${{ steps.changelog.outputs.clean_changelog }}
         run: echo $CHANGELOG
   release:
     runs-on: ubuntu-latest

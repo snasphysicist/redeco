@@ -33,7 +33,12 @@ jobs:
           DRY_RUN: true
       - name: Changelog
         id: changelog
-        uses: heinrichreimer/action-github-changelog-generator@v2.3
+        uses: TriPSs/conventional-changelog-action@v3.18.0
+        with:
+          skip-version-file: true
+          skip-commit: true
+          output-file: false
+          skip-tag: true
       - name: Print Changelog
         env:
           CHANGELOG: ${{ steps.changelog.outputs.changelog }}

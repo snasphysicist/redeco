@@ -31,9 +31,12 @@ jobs:
         env:
           WITH_V: true
           DRY_RUN: true
+      - name: Changelog
+        uses: ardalanamini/auto-changelog@v3
+        id: changelog
       - name: Print Changelog
         env:
-          CHANGELOG: ${{ steps.tag_version.outputs.changelog }}
+          CHANGELOG: ${{ steps.changelog.outputs.changelog }}
         run: echo $CHANGELOG
   release:
     runs-on: ubuntu-latest

@@ -33,7 +33,7 @@ func gloryDecoder(r *http.Request) (angel, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenUint64FieldHasOptionalQueryTag(t *testing.T) {
@@ -67,7 +67,7 @@ func bladeDecoder(r *http.Request) (Grass, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenUint32FieldHasOptionalQueryTag(t *testing.T) {
@@ -101,7 +101,7 @@ func throwDecoder(r *http.Request) (blind, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenUint16FieldHasOptionalQueryTag(t *testing.T) {
@@ -135,7 +135,7 @@ func thumbDecoder(r *http.Request) (aloof, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenUint8FieldHasOptionalQueryTag(t *testing.T) {
@@ -169,5 +169,5 @@ func QuoteDecoder(r *http.Request) (tower, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }

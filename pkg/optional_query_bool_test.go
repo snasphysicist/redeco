@@ -33,5 +33,5 @@ func snailReignDecoder(r *http.Request) (FeverRange, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }

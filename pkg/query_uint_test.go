@@ -33,7 +33,7 @@ func dormDecoder(r *http.Request) (stroke, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenUint64FieldHasQueryTag(t *testing.T) {
@@ -65,7 +65,7 @@ func HookDecoder(r *http.Request) (stir, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenUint32FieldHasQueryTag(t *testing.T) {
@@ -97,7 +97,7 @@ func showDecoder(r *http.Request) (Seize, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenUint16FieldHasQueryTag(t *testing.T) {
@@ -129,7 +129,7 @@ func carveDecoder(r *http.Request) (cage, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenUint8FieldHasQueryTag(t *testing.T) {
@@ -161,5 +161,5 @@ func forkDecoder(r *http.Request) (snail, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }

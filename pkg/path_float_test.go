@@ -28,7 +28,7 @@ func boxDecoder(r *http.Request) (smooth, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestPathParameterExtractionWithConversionWhenFloat64FieldHasPathTags(t *testing.T) {
@@ -57,7 +57,7 @@ func upsetDecoder(r *http.Request) (alive, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestPathParameterExtractionWithConversionWhenFloat32FieldHasPathTags(t *testing.T) {
@@ -86,5 +86,5 @@ func frenchDecoder(r *http.Request) (begin, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }

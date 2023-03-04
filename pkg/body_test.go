@@ -26,7 +26,7 @@ func barDecoder(r *http.Request) (A, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestBodyDeserialisationWhenStructHasJSONTags(t *testing.T) {
@@ -63,5 +63,5 @@ func barDecoder(r *http.Request) (A, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }

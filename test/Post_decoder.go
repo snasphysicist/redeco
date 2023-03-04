@@ -1,11 +1,15 @@
 package test
 
-import "encoding/json"
-import "fmt"
-import chi "github.com/go-chi/chi/v5"
-import "io"
-import "net/http"
-import "strconv"
+import (
+	"encoding/json"
+	"fmt"
+
+	"io"
+	"net/http"
+	"strconv"
+
+	chi "github.com/go-chi/chi/v5"
+)
 
 func PostDecoder(r *http.Request) (PostParameters, error) {
 	var d PostParameters
@@ -36,7 +40,6 @@ func PostDecoder(r *http.Request) (PostParameters, error) {
 		return d, err
 	}
 	d.C = uint16(cConvert)
-
 
 	d_ := r.URL.Query()["d"]
 	if len(d_) > 1 {

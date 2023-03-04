@@ -28,5 +28,5 @@ func fiveBearDecoder(r *http.Request) (youngCall, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }

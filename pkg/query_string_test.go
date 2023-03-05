@@ -27,5 +27,5 @@ func DDecoder(r *http.Request) (A, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }

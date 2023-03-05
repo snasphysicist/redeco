@@ -30,7 +30,7 @@ func barDecoder(r *http.Request) (A, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestPathParameterExtractionWithConversionWhenInt32FieldHasPathTags(t *testing.T) {
@@ -59,7 +59,7 @@ func barDecoder(r *http.Request) (B, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestPathParameterExtractionWithConversionWhenInt64FieldHasPathTags(t *testing.T) {
@@ -88,7 +88,7 @@ func barDecoder(r *http.Request) (F, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestPathParameterExtractionWithConversionWhenInt16FieldHasPathTags(t *testing.T) {
@@ -117,7 +117,7 @@ func barDecoder(r *http.Request) (I, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestPathParameterExtractionWithConversionWhenInt8FieldHasPathTags(t *testing.T) {
@@ -146,5 +146,5 @@ func barDecoder(r *http.Request) (your, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }

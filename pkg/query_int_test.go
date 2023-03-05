@@ -33,7 +33,7 @@ func beeDecoder(r *http.Request) (live, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenInt64FieldHasQueryTag(t *testing.T) {
@@ -65,7 +65,7 @@ func DreamDecoder(r *http.Request) (club, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenInt32FieldHasQueryTag(t *testing.T) {
@@ -97,7 +97,7 @@ func bankDecoder(r *http.Request) (Soar, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenInt16FieldHasQueryTag(t *testing.T) {
@@ -129,7 +129,7 @@ func linkDecoder(r *http.Request) (gloom, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenInt8FieldHasQueryTag(t *testing.T) {
@@ -161,5 +161,5 @@ func loanDecoder(r *http.Request) (build, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }

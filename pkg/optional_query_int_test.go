@@ -33,7 +33,7 @@ func crimeDecoder(r *http.Request) (hobby, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenInt64FieldHasOptionalQueryTag(t *testing.T) {
@@ -67,7 +67,7 @@ func stageDecoder(r *http.Request) (Aware, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenInt32FieldHasOptionalQueryTag(t *testing.T) {
@@ -101,7 +101,7 @@ func hoverDecoder(r *http.Request) (pause, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenInt16FieldHasOptionalQueryTag(t *testing.T) {
@@ -135,7 +135,7 @@ func smashDecoder(r *http.Request) (charm, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestQueryParameterExtractionWithConversionWhenInt8FieldHasOptionalQueryTag(t *testing.T) {
@@ -169,5 +169,5 @@ func MedalDecoder(r *http.Request) (amuse, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }

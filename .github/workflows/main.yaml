@@ -28,19 +28,6 @@ jobs:
         env:
           WITH_V: true
           DRY_RUN: true
-      - name: Changelog
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v3.18.0
-        with:
-          skip-version-file: true
-          skip-commit: true
-          output-file: false
-          skip-tag: true
-          release-count: 1
-      - name: Print Changelog
-        env:
-          CHANGELOG: ${{ steps.changelog.outputs.clean_changelog }}
-        run: echo $CHANGELOG
   release:
     runs-on: ubuntu-latest
     needs: test
@@ -53,18 +40,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
-      - name: Changelog
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v3.18.0
-        with:
-          skip-version-file: true
-          skip-commit: true
-          output-file: false
-          skip-tag: true
-          release-count: 1
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.changelog.outputs.clean_changelog }}
+          body: ${{ steps.tag_version.outputs.changelog }}

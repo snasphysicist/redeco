@@ -38,7 +38,7 @@ func Generate() {
 	if err != nil {
 		log.Fatalf("Failed to determine generated file path: %s", err)
 	}
-	err = os.WriteFile(op, []byte(c), 0644)
+	err = os.WriteFile(op, []byte(c), 0600)
 	if err != nil {
 		log.Fatalf("Failed to write generated code to '%s': %s", op, err)
 	}

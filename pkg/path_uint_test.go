@@ -28,7 +28,7 @@ func nightDecoder(r *http.Request) (deep, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestPathParameterExtractionWithConversionWhenUint64FieldHasPathTags(t *testing.T) {
@@ -57,7 +57,7 @@ func MoreDecoder(r *http.Request) (heart, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestPathParameterExtractionWithConversionWhenUint32FieldHasPathTags(t *testing.T) {
@@ -86,7 +86,7 @@ func bladeDecoder(r *http.Request) (Light, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestPathParameterExtractionWithConversionWhenUint16FieldHasPathTags(t *testing.T) {
@@ -115,7 +115,7 @@ func hatDecoder(r *http.Request) (stupid, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }
 
 func TestPathParameterExtractionWithConversionWhenUint8FieldHasPathTags(t *testing.T) {
@@ -144,5 +144,5 @@ func moveDecoder(r *http.Request) (autumn, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }

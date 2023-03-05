@@ -3,6 +3,7 @@ package redeco
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -71,4 +72,15 @@ func optionalQueryTestSource(name string, field string, typ string, param string
 		%s %s %squery:"%s,optional"%s
 	}
 	`, name, field, typ, "`", param, "`")
+}
+
+// ignoringGeneratedComment strips out the "Code generated" comment
+// to focus on the actual generated code
+func ignoringGeneratedComment(s string) string {
+	ls := strings.Split(s, "\n")
+	ls = filter(ls, func(l string) bool {
+		return !strings.Contains(l, "Code generated") && !strings.Contains(l, "DO NOT EDIT")
+	})
+	ls = ls[:len(ls)-1] // removes an extra newline added for the Code generated comment
+	return strings.Join(ls, "\n")
 }

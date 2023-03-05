@@ -31,5 +31,5 @@ func ScreamHeartDecoder(r *http.Request) (SheetDrug, error) {
 	return d, err
 }
 `
-	expectString(t, expect, s)
+	expectString(t, expect, ignoringGeneratedComment(s))
 }

@@ -109,5 +109,5 @@ func (g generator) Generate(o options) (string, error) {
 	log.Printf("Generated decoding function: %s", f)
 	i := importsCode(&gtn)
 	c := commentCode()
-	return fmt.Sprintf("%s\n%s\n%s\n%s\n", p, i, f, c), nil
+	return fmt.Sprintf("%s\n%s\n%s\n%s\n", c, p, i, f), nil
 }

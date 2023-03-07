@@ -5,6 +5,7 @@ linters:
   enable:
     - errcheck
     - gochecknoglobals
+    - gochecknoinits
     - gocognit
     - gofmt
     - gosec

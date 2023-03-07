@@ -8,6 +8,7 @@ linters:
     - gofmt
     - gosec
     - gosimple
+    - govet
     - staticcheck
     - unused
 

@@ -24,18 +24,27 @@ func StartServer() func() {
 		ReadHeaderTimeout: time.Second,
 	}
 	d := make(chan struct{})
-	go func() {
-		l, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
-		if err != nil {
-			panic(err)
-		}
-		close(d)
-		err = s.Serve(l)
-		if err != nil && err != http.ErrServerClosed {
-			panic(err)
-		}
-	}()
+	go listenAndServe(port, d, &s)
 	<-d
+	return shutdowner(&s)
+}
+
+// listenAndServe starts the server listening and serving
+// and closes the ready channel when the server is listening. Panics on any error.
+func listenAndServe(port uint, ready chan<- struct{}, s *http.Server) {
+	l, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	if err != nil {
+		panic(err)
+	}
+	close(ready)
+	err = s.Serve(l)
+	if err != nil && err != http.ErrServerClosed {
+		panic(err)
+	}
+}
+
+// shutdowner creates a function to shutdown a HTTP server, panicing on error
+func shutdowner(s *http.Server) func() {
 	return func() {
 		err := s.Shutdown(context.Background())
 		if err != nil {

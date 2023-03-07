@@ -3,7 +3,12 @@ run:
 
 linters:
   enable:
+    - gocognit
     - gofmt
     - gosec
     - gosimple
     - staticcheck
+
+linters-settings:
+  gocognit:
+    min-complexity: 5

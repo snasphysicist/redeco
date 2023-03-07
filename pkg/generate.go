@@ -11,18 +11,9 @@ import (
 
 // Generate is the main command called when used as a CLI tool
 func Generate() {
-	p, err := fileWithNameAndPackage(os.Getenv("GOFILE"), os.Getenv("GOPACKAGE"))
+	b, err := loadSourceFile()
 	if err != nil {
-		log.Fatalf("Failed to find file with name %s in package %s",
-			os.Getenv("GOFILE"), os.Getenv("GOPACKAGE"))
-	}
-	f, err := os.Open(p)
-	if err != nil {
-		log.Fatalf("Failed to open file '%s': %s", p, err)
-	}
-	b, err := io.ReadAll(f)
-	if err != nil {
-		log.Fatalf("Failed to read file '%s': %s", p, err)
+		log.Fatal(err)
 	}
 	g := NewFromString(string(b))
 	o, err := parseArguments()
@@ -34,15 +25,43 @@ func Generate() {
 		log.Fatalf("Failed to generate decoding code: %s", err)
 	}
 	log.Printf("Generated decoding code for %s", o.handler)
-	op, err := generatedFilePath(o.handler, os.Getenv("GOFILE"), os.Getenv("GOPACKAGE"))
+	err = writeGeneratedFile(o.handler, c)
 	if err != nil {
-		log.Fatalf("Failed to determine generated file path: %s", err)
+		log.Fatal(err)
 	}
-	err = os.WriteFile(op, []byte(c), 0600)
+}
+
+// loadSourceFile find and the load the file from which we were invoked
+func loadSourceFile() ([]byte, error) {
+	p, err := fileWithNameAndPackage(os.Getenv("GOFILE"), os.Getenv("GOPACKAGE"))
 	if err != nil {
-		log.Fatalf("Failed to write generated code to '%s': %s", op, err)
+		return make([]byte, 0), fmt.Errorf(
+			"failed to find file with name %s in paclage %s",
+			os.Getenv("GOFILE"), os.Getenv("GOPACKAGE"))
 	}
-	log.Printf("Wrote code for %s's decoder out to %s", o.handler, op)
+	f, err := os.Open(p)
+	if err != nil {
+		return make([]byte, 0), fmt.Errorf("failed to open file '%s': %w", p, err)
+	}
+	b, err := io.ReadAll(f)
+	if err != nil {
+		return make([]byte, 0), fmt.Errorf("failed to read file '%s': %w", p, err)
+	}
+	return b, nil
+}
+
+// writeGeneratedFile writes out the generated code to a file named for the targeted handler
+func writeGeneratedFile(handler string, code string) error {
+	op, err := generatedFilePath(handler, os.Getenv("GOFILE"), os.Getenv("GOPACKAGE"))
+	if err != nil {
+		return fmt.Errorf("failed to determine generated file path: %w", err)
+	}
+	err = os.WriteFile(op, []byte(code), 0600)
+	if err != nil {
+		return fmt.Errorf("failed to write generated code to '%s': %w", op, err)
+	}
+	log.Printf("Wrote code for %s's decoder out to %s", handler, op)
+	return nil
 }
 
 // generator is responsible for generating the new source code

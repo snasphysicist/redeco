@@ -8,6 +8,7 @@ linters:
     - gosec
     - gosimple
     - staticcheck
+    - unused
 
 linters-settings:
   gocognit:

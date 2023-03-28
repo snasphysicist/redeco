@@ -38,11 +38,18 @@ func nameOf(f *ast.Field) (string, error) {
 
 // typeOf returns the type name associated with the field
 func typeOf(f *ast.Field) string {
-	switch tt := f.Type.(type) {
+	return typeNameFrom(f.Type)
+}
+
+// typeNameFrom returns a type name associated with the expression
+func typeNameFrom(x ast.Expr) string {
+	switch tt := x.(type) {
 	case *ast.Ident:
 		return tt.Name
+	case *ast.SelectorExpr:
+		return typeNameFrom(tt.X) + "." + tt.Sel.Name
 	}
-	log.Panicf("Cannot deal with type %#v", f.Type)
+	log.Panicf("Cannot deal with type %#v", x)
 	return ""
 }
 

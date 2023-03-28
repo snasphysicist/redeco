@@ -55,24 +55,12 @@ func convertCode(g *generation, f field, t tag) (string, error) {
 	if strings.HasPrefix(f.typ, "int") {
 		return convertIntCode(g, f, t)
 	}
+	if strings.HasPrefix(f.typ, "uint") {
+		return convertUintCode(g, f, t)
+	}
 	switch f.typ {
 	case "string":
 		return fmt.Sprintf("	d.%s = %s", f.name, safeVariableName(t.values[0])), nil
-	case "uint":
-		g.newImport(iport{path: "strconv"})
-		return convertIntTemplate(t.values[0], "Uint", 64, f.name, "uint"), nil
-	case "uint64":
-		g.newImport(iport{path: "strconv"})
-		return convertIntTemplate(t.values[0], "Uint", 64, f.name, "uint64"), nil
-	case "uint32":
-		g.newImport(iport{path: "strconv"})
-		return convertIntTemplate(t.values[0], "Uint", 32, f.name, "uint32"), nil
-	case "uint16":
-		g.newImport(iport{path: "strconv"})
-		return convertIntTemplate(t.values[0], "Uint", 16, f.name, "uint16"), nil
-	case "uint8":
-		g.newImport(iport{path: "strconv"})
-		return convertIntTemplate(t.values[0], "Uint", 8, f.name, "uint8"), nil
 	case "float":
 		g.newImport(iport{path: "strconv"})
 		return convertFloatTemplate(t.values[0], 64, f.name, "float"), nil
@@ -102,6 +90,20 @@ func convertIntCode(g *generation, f field, t tag) (string, error) {
 	}
 	return convertIntTemplate(
 		t.values[0], "Int", uint8(bitSize), f.name, fmt.Sprintf("int%d", bitSize)), nil
+}
+
+// convertUintCode generates the code for reading & converting an int(X) path variable
+func convertUintCode(g *generation, f field, t tag) (string, error) {
+	g.newImport(iport{path: "strconv"})
+	if f.typ == "uint" {
+		return convertIntTemplate(t.values[0], "Uint", 64, f.name, "uint"), nil
+	}
+	bitSize, err := strconv.ParseInt(strings.ReplaceAll(f.typ, "uint", ""), 10, 8)
+	if err != nil {
+		return "", err
+	}
+	return convertIntTemplate(
+		t.values[0], "Uint", uint8(bitSize), f.name, fmt.Sprintf("uint%d", bitSize)), nil
 }
 
 // pathExtractTemplate is the template code for extracting a path parameter

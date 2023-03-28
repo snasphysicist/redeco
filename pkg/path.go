@@ -61,15 +61,7 @@ func convertCode(g *generation, f field, t tag) (string, error) {
 	if strings.HasPrefix(f.typ, "float") {
 		return convertFloatCode(g, f, t)
 	}
-	switch f.typ {
-	case "string":
-		return fmt.Sprintf("	d.%s = %s", f.name, safeVariableName(t.values[0])), nil
-	case "bool":
-		g.newImport(iport{path: "strconv"})
-		return convertBoolTemplate(t.values[0], f.name), nil
-	}
-	log.Panicf("Cannot convert type '%s'", f.typ)
-	return "", nil
+	return convertNonNumericCode(g, f, t)
 }
 
 // convertIntCode generates the code for reading & converting an int(X) path variable
@@ -112,6 +104,18 @@ func convertFloatCode(g *generation, f field, t tag) (string, error) {
 	}
 	return convertFloatTemplate(
 		t.values[0], uint8(bitSize), f.name, fmt.Sprintf("float%d", bitSize)), nil
+}
+
+// convertNonNumericCode generates code to read/convert non numeric path parameters
+func convertNonNumericCode(g *generation, f field, t tag) (string, error) {
+	switch f.typ {
+	case "string":
+		return fmt.Sprintf("	d.%s = %s", f.name, safeVariableName(t.values[0])), nil
+	case "bool":
+		g.newImport(iport{path: "strconv"})
+		return convertBoolTemplate(t.values[0], f.name), nil
+	}
+	return "", fmt.Errorf("cannot convert type '%s'", f.typ)
 }
 
 // pathExtractTemplate is the template code for extracting a path parameter

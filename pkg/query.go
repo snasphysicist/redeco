@@ -17,8 +17,8 @@ func queryDeserialiseCode(g *generation) (string, error) {
 		log.Printf("No query tags in target struct, won't look for query parameters")
 		return "", nil
 	}
-	c := mapping(f, func(f field) string { return queryExtractCode(g, f) })
-	return strings.Join(c, "\n"), nil
+	c, err := mapWithError(f, func(f field) (string, error) { return queryExtractCode(g, f) })
+	return strings.Join(c, "\n"), err
 }
 
 // queryTaggedFields returns any fields in the struct with query tags
@@ -29,13 +29,13 @@ func queryTaggedFields(s sourceStruct) []field {
 }
 
 // queryExtractCode generates code to extract the query parameter associated with f
-func queryExtractCode(g *generation, f field) string {
+func queryExtractCode(g *generation, f field) (string, error) {
 	t := filter(f.tags, func(t tag) bool { return t.key == "query" })
 	if len(t) != 1 {
 		log.Panicf("Could not find unique query tag in %#v", f)
 	}
 	if parameterIsOptional(t[0]) {
-		return optionalQueryExtractCode(g, f, t[0])
+		return optionalQueryExtractCode(g, f, t[0]), nil
 	}
 	return requiredQueryExtractCode(g, f, t[0])
 }

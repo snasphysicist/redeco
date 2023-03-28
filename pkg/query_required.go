@@ -3,11 +3,16 @@ package redeco
 import (
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 )
 
 // requiredQueryExtractCode generates code to extract and convert
 // a query parameter associated with the provided field & tag
-func requiredQueryExtractCode(g *generation, f field, t tag) string {
+func requiredQueryExtractCode(g *generation, f field, t tag) (string, error) {
+	if strings.HasPrefix(f.typ, "int") {
+		return requiredQueryIntExtractCode(g, f, t)
+	}
 	switch f.typ {
 	case "string":
 		v := safeVariableName(t.values[0])
@@ -21,43 +26,42 @@ func requiredQueryExtractCode(g *generation, f field, t tag) string {
 			v,
 			f.name,
 			v,
-		)
-	case "int":
-		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Int", 64, "int")
-	case "int64":
-		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Int", 64, "int64")
-	case "int32":
-		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Int", 32, "int32")
-	case "int16":
-		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Int", 16, "int16")
-	case "int8":
-		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Int", 8, "int8")
+		), nil
 	case "uint":
 		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint")
+		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint"), nil
 	case "uint64":
 		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint64")
+		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint64"), nil
 	case "uint32":
 		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 32, "uint32")
+		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 32, "uint32"), nil
 	case "uint16":
 		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 16, "uint16")
+		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 16, "uint16"), nil
 	case "uint8":
 		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 8, "uint8")
+		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 8, "uint8"), nil
 	case "bool":
 		attachConversionImports(g)
-		return requiredQueryBoolExtractTemplate(t.values[0], f.name)
+		return requiredQueryBoolExtractTemplate(t.values[0], f.name), nil
 	}
 	log.Panicf("Don't know how to convert type '%s'", f.typ)
-	return ""
+	return "", nil
+}
+
+// requiredQueryIntExtractCode generates the code for reading & converting an int(X) required query parameter
+func requiredQueryIntExtractCode(g *generation, f field, t tag) (string, error) {
+	attachConversionImports(g)
+	if f.typ == "int" {
+		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Int", 64, "int"), nil
+	}
+	bitSize, err := strconv.ParseInt(strings.ReplaceAll(f.typ, "int", ""), 10, 8)
+	if err != nil {
+		return "", err
+	}
+	return requiredQueryIntExtractTemplate(
+		t.values[0], f.name, "Int", uint8(bitSize), fmt.Sprintf("int%d", bitSize)), nil
 }
 
 // requiredQueryStringExtractTemplate is the template code for extracting a string path parameter

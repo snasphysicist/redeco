@@ -58,18 +58,12 @@ func convertCode(g *generation, f field, t tag) (string, error) {
 	if strings.HasPrefix(f.typ, "uint") {
 		return convertUintCode(g, f, t)
 	}
+	if strings.HasPrefix(f.typ, "float") {
+		return convertFloatCode(g, f, t)
+	}
 	switch f.typ {
 	case "string":
 		return fmt.Sprintf("	d.%s = %s", f.name, safeVariableName(t.values[0])), nil
-	case "float":
-		g.newImport(iport{path: "strconv"})
-		return convertFloatTemplate(t.values[0], 64, f.name, "float"), nil
-	case "float64":
-		g.newImport(iport{path: "strconv"})
-		return convertFloatTemplate(t.values[0], 64, f.name, "float64"), nil
-	case "float32":
-		g.newImport(iport{path: "strconv"})
-		return convertFloatTemplate(t.values[0], 32, f.name, "float32"), nil
 	case "bool":
 		g.newImport(iport{path: "strconv"})
 		return convertBoolTemplate(t.values[0], f.name), nil
@@ -104,6 +98,20 @@ func convertUintCode(g *generation, f field, t tag) (string, error) {
 	}
 	return convertIntTemplate(
 		t.values[0], "Uint", uint8(bitSize), f.name, fmt.Sprintf("uint%d", bitSize)), nil
+}
+
+// convertFloatCode generates the code for reading & converting an float(X) path variable
+func convertFloatCode(g *generation, f field, t tag) (string, error) {
+	g.newImport(iport{path: "strconv"})
+	if f.typ == "float" {
+		return convertFloatTemplate(t.values[0], 64, f.name, "float"), nil
+	}
+	bitSize, err := strconv.ParseInt(strings.ReplaceAll(f.typ, "float", ""), 10, 8)
+	if err != nil {
+		return "", err
+	}
+	return convertFloatTemplate(
+		t.values[0], uint8(bitSize), f.name, fmt.Sprintf("float%d", bitSize)), nil
 }
 
 // pathExtractTemplate is the template code for extracting a path parameter

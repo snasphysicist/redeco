@@ -3,7 +3,6 @@ package redeco
 import (
 	"fmt"
 	"go/ast"
-	"log"
 	"strings"
 )
 
@@ -20,7 +19,10 @@ func fromField(f *ast.Field) (field, error) {
 	if err != nil {
 		return field{}, err
 	}
-	typ := typeOf(f)
+	typ, err := typeOf(f)
+	if err != nil {
+		return field{}, err
+	}
 	t := tagsAttachedTo(f)
 	return field{name: n, typ: typ, tags: t}, nil
 }
@@ -37,18 +39,28 @@ func nameOf(f *ast.Field) (string, error) {
 }
 
 // typeOf returns the type name associated with the field
-func typeOf(f *ast.Field) string {
-	switch tt := f.Type.(type) {
+func typeOf(f *ast.Field) (string, error) {
+	return typeNameFrom(f.Type)
+}
+
+// typeNameFrom returns a type name associated with the expression
+func typeNameFrom(x ast.Expr) (string, error) {
+	switch tt := x.(type) {
 	case *ast.Ident:
-		return tt.Name
+		return tt.Name, nil
+	case *ast.SelectorExpr:
+		pf, err := typeNameFrom(tt.X)
+		return fmt.Sprintf("%s.%s", pf, tt.Sel.Name), err
 	}
-	log.Panicf("Cannot deal with type %#v", f.Type)
-	return ""
+	return "", fmt.Errorf("cannot extract type name from type %#v", x)
 }
 
 // tagsAttachedTo parses all tags attached
 // to a field in Go source code
 func tagsAttachedTo(f *ast.Field) []tag {
+	if f.Tag == nil {
+		return make([]tag, 0)
+	}
 	tags := strings.Trim(f.Tag.Value, "`")
 	remaining := tags
 	parsed := make([]tag, 0)

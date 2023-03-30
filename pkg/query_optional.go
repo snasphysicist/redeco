@@ -2,7 +2,6 @@ package redeco
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -23,8 +22,7 @@ func optionalQueryExtractCode(g *generation, f field, t tag) (string, error) {
 		attachConversionImports(g)
 		return optionalQueryBoolExtractTemplate(t.values[0], f.name), nil
 	}
-	log.Panicf("Don't know how to generate code for type: %s", f.typ)
-	return "", nil
+	return "", fmt.Errorf("don't know how to handle type '%s'", f.typ)
 }
 
 // optionalQueryIntExtractCode generates the code for reading & converting an int(X) optional query parameter

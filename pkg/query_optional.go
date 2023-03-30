@@ -13,27 +13,15 @@ func optionalQueryExtractCode(g *generation, f field, t tag) (string, error) {
 	if strings.HasPrefix(f.typ, "int") {
 		return optionalQueryIntExtractCode(g, f, t)
 	}
+	if strings.HasPrefix(f.typ, "uint") {
+		return optionalQueryUintExtractCode(g, f, t)
+	}
 	switch f.typ {
 	case "string":
 		return optionalQueryStringExtractTemplate(t.values[0], f.name), nil
 	case "bool":
 		attachConversionImports(g)
 		return optionalQueryBoolExtractTemplate(t.values[0], f.name), nil
-	case "uint":
-		attachConversionImports(g)
-		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint"), nil
-	case "uint64":
-		attachConversionImports(g)
-		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint64"), nil
-	case "uint32":
-		attachConversionImports(g)
-		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 32, "uint32"), nil
-	case "uint16":
-		attachConversionImports(g)
-		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 16, "uint16"), nil
-	case "uint8":
-		attachConversionImports(g)
-		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 8, "uint8"), nil
 	}
 	log.Panicf("Don't know how to generate code for type: %s", f.typ)
 	return "", nil
@@ -51,6 +39,20 @@ func optionalQueryIntExtractCode(g *generation, f field, t tag) (string, error) 
 	}
 	return optionalQueryIntExtractTemplate(
 		t.values[0], f.name, "Int", uint8(bitSize), fmt.Sprintf("int%d", bitSize)), nil
+}
+
+// optionalQueryUintExtractCode generates the code for reading & converting a uint(X) optional query parameter
+func optionalQueryUintExtractCode(g *generation, f field, t tag) (string, error) {
+	attachConversionImports(g)
+	if f.typ == "uint" {
+		return optionalQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint"), nil
+	}
+	bitSize, err := strconv.ParseInt(strings.ReplaceAll(f.typ, "uint", ""), 10, 8)
+	if err != nil {
+		return "", err
+	}
+	return optionalQueryIntExtractTemplate(
+		t.values[0], f.name, "Uint", uint8(bitSize), fmt.Sprintf("uint%d", bitSize)), nil
 }
 
 // optionalQueryStringExtractTemplate generates code extracting an optional string type query parameter

@@ -1,0 +1,24 @@
+run:
+  timeout: 30s  
+
+linters:
+  enable:
+    - errcheck
+    - gochecknoglobals
+    - gochecknoinits
+    - gocognit
+    - gocyclo
+    - gofmt
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unparam
+    - unused
+
+linters-settings:
+  gocognit:
+    min-complexity: 5
+  gocyclo:
+    min-complexity: 5

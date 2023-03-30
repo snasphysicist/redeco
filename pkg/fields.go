@@ -49,6 +49,9 @@ func typeOf(f *ast.Field) string {
 // tagsAttachedTo parses all tags attached
 // to a field in Go source code
 func tagsAttachedTo(f *ast.Field) []tag {
+	if f.Tag == nil {
+		return make([]tag, 0)
+	}
 	tags := strings.Trim(f.Tag.Value, "`")
 	remaining := tags
 	parsed := make([]tag, 0)

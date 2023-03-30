@@ -35,7 +35,7 @@ func queryExtractCode(g *generation, f field) (string, error) {
 		log.Panicf("Could not find unique query tag in %#v", f)
 	}
 	if parameterIsOptional(t[0]) {
-		return optionalQueryExtractCode(g, f, t[0]), nil
+		return optionalQueryExtractCode(g, f, t[0])
 	}
 	return requiredQueryExtractCode(g, f, t[0])
 }

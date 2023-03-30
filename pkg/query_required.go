@@ -13,6 +13,9 @@ func requiredQueryExtractCode(g *generation, f field, t tag) (string, error) {
 	if strings.HasPrefix(f.typ, "int") {
 		return requiredQueryIntExtractCode(g, f, t)
 	}
+	if strings.HasPrefix(f.typ, "uint") {
+		return requiredQueryUintExtractCode(g, f, t)
+	}
 	switch f.typ {
 	case "string":
 		v := safeVariableName(t.values[0])
@@ -27,21 +30,6 @@ func requiredQueryExtractCode(g *generation, f field, t tag) (string, error) {
 			f.name,
 			v,
 		), nil
-	case "uint":
-		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint"), nil
-	case "uint64":
-		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint64"), nil
-	case "uint32":
-		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 32, "uint32"), nil
-	case "uint16":
-		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 16, "uint16"), nil
-	case "uint8":
-		attachConversionImports(g)
-		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 8, "uint8"), nil
 	case "bool":
 		attachConversionImports(g)
 		return requiredQueryBoolExtractTemplate(t.values[0], f.name), nil
@@ -62,6 +50,20 @@ func requiredQueryIntExtractCode(g *generation, f field, t tag) (string, error) 
 	}
 	return requiredQueryIntExtractTemplate(
 		t.values[0], f.name, "Int", uint8(bitSize), fmt.Sprintf("int%d", bitSize)), nil
+}
+
+// requiredQueryUintExtractCode generates the code for reading & converting a uint(X) required query parameter
+func requiredQueryUintExtractCode(g *generation, f field, t tag) (string, error) {
+	attachConversionImports(g)
+	if f.typ == "uint" {
+		return requiredQueryIntExtractTemplate(t.values[0], f.name, "Uint", 64, "uint"), nil
+	}
+	bitSize, err := strconv.ParseInt(strings.ReplaceAll(f.typ, "uint", ""), 10, 8)
+	if err != nil {
+		return "", err
+	}
+	return requiredQueryIntExtractTemplate(
+		t.values[0], f.name, "Uint", uint8(bitSize), fmt.Sprintf("uint%d", bitSize)), nil
 }
 
 // requiredQueryStringExtractTemplate is the template code for extracting a string path parameter

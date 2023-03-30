@@ -6,6 +6,7 @@ linters:
     - errcheck
     - gochecknoglobals
     - gochecknoinits
+    - gocyclo
     - gofmt
     - gosec
     - gosimple
@@ -14,3 +15,7 @@ linters:
     - staticcheck
     - unparam
     - unused
+
+linters-settings:
+  gocyclo:
+    min-complexity: 5

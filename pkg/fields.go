@@ -50,7 +50,7 @@ func typeNameFrom(x ast.Expr) (string, error) {
 		return tt.Name, nil
 	case *ast.SelectorExpr:
 		pf, err := typeNameFrom(tt.X)
-		return pf + "." + tt.Sel.Name, err
+		return fmt.Sprintf("%s.%s", pf, tt.Sel.Name), err
 	}
 	return "", fmt.Errorf("cannot extract type name from type %#v", x)
 }

@@ -9,6 +9,7 @@ import (
 // requiredQueryExtractCode generates code to extract and convert
 // a query parameter associated with the provided field & tag
 func requiredQueryExtractCode(g *generation, f field, t tag) (string, error) {
+	g.newImport(iport{path: "fmt"})
 	if strings.HasPrefix(f.typ, "int") {
 		return requiredQueryIntExtractCode(g, f, t)
 	}

@@ -12,6 +12,7 @@ func TestStringQueryParameterExtractionWithoutConversionWhenStructHasQueryTags(t
 	}
 	expect := `package foo
 
+import "fmt"
 import "net/http"
 
 func DDecoder(r *http.Request) (A, error) {

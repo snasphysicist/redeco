@@ -10,6 +10,7 @@ func TestOptionalStringQueryParameterExtractionWithoutConversionWhenStructHasQue
 	}
 	expect := `package foo
 
+import "fmt"
 import "net/http"
 
 func sDecoder(r *http.Request) (p, error) {
